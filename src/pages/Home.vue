@@ -7,9 +7,21 @@
         alt="pokémon"
         >
 
-        <h1>Pick your pokemon</h1>
-
         <div class="select-your-pokemon-content">
+
+            <PokemonList 
+            :pokemon-list="statePokemonDataList"
+            :favorites="stateFavoritePokemonList"
+            @deleteFavorite="deleteFavorite"
+            @addFavorite="addFavorite"
+            />
+
+            <SummaryFavorites
+            :pokemon-list="statePokemonDataList"
+            :favorites="stateFavoritePokemonList"
+            @addFavorite="addFavorite"
+            @eraseFavoritePokemonList="eraseFavoritePokemonList"
+            />
 
         </div>
 
@@ -21,11 +33,17 @@
 
 const axios = require('axios').default;
 import { mapState, mapActions } from 'vuex';
+import PokemonList from '../components/PokemonList.vue'
+import SummaryFavorites from '../components/SummaryFavorites.vue'
 
 
 
 export default {
     name: 'Home',
+    components: {
+        PokemonList,
+        SummaryFavorites
+    },
     computed: {
         ...mapState(['statePokemonDataList', 'stateFavoritePokemonList']),
     },
@@ -37,9 +55,9 @@ export default {
         async getPokemonData(){
             let url = 'https://pokeapi.co/api/v2/pokemon?limit=151';
             const response = await axios.get(url);
-            this.result = response.data;
-            JSON.stringify(this.result);
-            console.log(this.result);
+            const json = await response.data;
+            return json.results;
+            
         },
         ...mapActions(['setPokemonData', 'addFavorite', 'deleteFavorite', 'eraseFavoritePokemonList']),
     }
